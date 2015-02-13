@@ -5,7 +5,8 @@ output:
     keep_md: true
 --- 
 
-```{r message=FALSE}
+
+```r
 # load necessary libs
 if (!require(dplyr)) {
         install.packages("dplyr")
@@ -17,7 +18,8 @@ if (!require(ggplot2)) {
 }
 ```
 ### Loading and preprocessing the data
-```{r}
+
+```r
 # read in the data set
 activity <- read.csv("activity.csv", colClasses = c("numeric", "Date", "numeric"))
 # add a column containing 'real' 5-min intervals i.e. 5 min offsets from 0, eg:
@@ -28,7 +30,8 @@ activity <- mutate(activity, interval_mins = (interval %/% 100 * 60) + interval 
 ```
 
 ### What is mean total number of steps taken per day?
-```{r fig.width=10}
+
+```r
 # calculate total steps per day
 totalStepsPerDay <- tapply(activity$steps, activity$date, sum, simplify=T, na.rm=T)
 hist(totalStepsPerDay, main = "Total steps per day", xlab = "Steps")
@@ -38,19 +41,32 @@ legend(x = "topright", c("mean", "median"),
        col = c("royalblue", "red"), lt = c(2, 2))
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
 Mean total number of steps taken per day:
-```{r}
+
+```r
 mean(totalStepsPerDay)
+```
+
+```
+## [1] 9354.23
 ```
 
 
 Median total number of steps taken per day:
-```{r}
+
+```r
 median(totalStepsPerDay)
 ```
 
+```
+## [1] 10395
+```
+
 ### What is the average daily activity pattern?
-```{r fig.width=12, fig.height=5}
+
+```r
 steps_df <- activity %>%
         group_by(interval, interval_mins) %>%
         # calculate average number of steps by interval and store in 
@@ -61,31 +77,49 @@ ggplot(steps_df, aes(interval_mins, mean_steps)) +
         geom_line() +
         labs(title = "Average number of steps per day") +
         labs(x = "Time (mins)", y = "Number of steps")
-````
+```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
 The 5-minute interval that contains the max number of steps (on the 'real' minute scale):
 
-```{r}
+
+```r
 with(steps_df, steps_df[mean_steps == max(mean_steps),][["interval_mins"]])
+```
+
+```
+## [1] 515
 ```
 
 or on the original '(hh)mm' scale: 
 
-```{r}
+
+```r
 with(steps_df, steps_df[mean_steps == max(mean_steps),][["interval"]])
+```
+
+```
+## [1] 835
 ```
 
 ### Imputing missing values
 
 The total number of missing values in the dataset:
-```{r}
+
+```r
 sum(is.na(activity$steps))
+```
+
+```
+## [1] 2304
 ```
 
 As a strategy for filling in all missing values, let's replace all NAs with a
 mean number of steps value for that 5-min interval
 
-```{r fig.height=8, fig.width=10}
+
+```r
 activity2 <- activity %>%
         group_by(interval_mins) %>%
         ## replace NAs with mean values for that 5-min interval
@@ -105,31 +139,45 @@ abline(v = mean(totalStepsPerDay2), col = "royalblue", lwd = 2)
 abline(v = median(totalStepsPerDay2), col = "red", lty = 2)
 legend(x = "topright", c("mean", "median"), col = c("royalblue", "red"),
        lty = c(2, 2))
-
 ```
 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
+
 Mean total number of steps taken per day:
-```{r}
+
+```r
 mean(totalStepsPerDay2)
 ```
 
+```
+## [1] 10766.19
+```
+
 Median total number of steps taken per day:
-```{r}
+
+```r
 median(totalStepsPerDay2)
+```
+
+```
+## [1] 10766.19
 ```
 
 Both mean and median total number of steps per day have slightly increased as a result of  imputing missing data on the estimates of the total daily number of steps:
 
-```{r echo=FALSE}
-cat("Mean total steps: ", mean(totalStepsPerDay), " -> ", 
-    mean(totalStepsPerDay2))
-cat("Median total steps: ", median(totalStepsPerDay), " -> ", 
-    median(totalStepsPerDay2))
+
+```
+## Mean total steps:  9354.23  ->  10766.19
+```
+
+```
+## Median total steps:  10395  ->  10766.19
 ```
 
 ### Are there differences in activity patterns between weekdays and weekends?
 
-```{r fig.width=12, fig.height=10}
+
+```r
 activity2 <- activity2 %>%
         # add a column with weekdays for each date value
         # and convert into 'weekend'-'weekday' factor
@@ -144,3 +192,5 @@ ggplot(steps2_df, aes(interval_mins, mean_steps)) +
         labs(title = "Average number of steps per day") +
         labs(x = "Time (mins)", y = "Number of steps")
 ```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png) 
