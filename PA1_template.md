@@ -134,7 +134,7 @@ abline(v = median(totalStepsPerDay), col = "red", lty = 2)
 legend(x = "topright", c("mean", "median"), col = c("royalblue", "red"),
         lt = c(2, 2))
 
-hist(totalStepsPerDay2, main = "Total steps per day - NAs filled in with mean number of steps", xlab = "Steps")
+hist(totalStepsPerDay2, main = "Total steps per day - NAs filled in with mean number of steps per interval", xlab = "Steps")
 abline(v = mean(totalStepsPerDay2), col = "royalblue", lwd = 2)
 abline(v = median(totalStepsPerDay2), col = "red", lty = 2)
 legend(x = "topright", c("mean", "median"), col = c("royalblue", "red"),
